@@ -1,0 +1,29 @@
+
+$ColorsMap : (
+    Valid: rgb(180, 255, 180),
+    Warn: rgb(250, 250, 170),
+    Invalid: rgb(240, 150, 150),
+    Info: rgb(175, 255, 255),
+    Default: rgb(240, 240, 240),
+);
+
+%State {
+    width: max-content;
+    margin: 1em 1em;
+    padding: 0.5em;
+    border-radius: 2em;
+    border: 1px solid;
+}
+
+@mixin State($color) {
+    @extend %State;
+    color: darken($color, 60%);
+    background-color: $color;
+    border-color: darken($color, 20%);
+}
+
+@each $Mapping, $Color in $ColorsMap {
+    .#{$Mapping}State {
+        @include  State($Color);
+    }
+}

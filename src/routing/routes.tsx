@@ -8,6 +8,7 @@ import ClinicRegisterForm from '../pages/ClinicRegister/ClinicRegister';
 import UserProfile from '../pages/UserProfile/UserProfile';
 import ClinicOwnerPage from '../pages/ClinicOwnerPage/ClinicOwnerPage';
 import LoginPage from '../pages/Login/LoginPage';
+import UserAccount from '../pages/UserAccount/UserAccount';
 
 const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
   { path: '/for-owner', element: <ClinicRegisterForm /> },
   { path: "/owner", element: <ClinicOwnerPage /> },
   { path: "/profile", element: <UserProfile /> },
+  { path: "/account", element: <UserAccount /> }, // DEVELOPMENT!!!
   { path: "/login", element: <LoginPage /> },
 
 ]);
