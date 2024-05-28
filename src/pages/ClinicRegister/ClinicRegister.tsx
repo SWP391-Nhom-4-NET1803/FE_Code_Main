@@ -21,35 +21,33 @@ const ClinicRegisterForm = () => {
             <Header />
             <div className={styles["form-header"]}>Đăng kí phòng khám</div>
             <form className={styles["form-container"]}>
-                <div className={styles["container"]}>
-                    <div className={styles["step"]}>{currentStep + 1} / {steps.length}</div>
-                    <div className="row">
-                        <div className="col">
+                <div className={styles.container}>
+                    <div className={styles.step}>{currentStep + 1} / {steps.length}</div>
+                    <div>
+                        <div>
                             {step}
-                            {currentStep === 0 && <div className='row'>
-                                <div className={`col ${styles.hour}`}>
-                                    <label htmlFor='open-hour' className="form-label">Giờ mở cửa</label>
-                                    <input id="open-hour" className="form-control" placeholder='7:00'></input>
-                                </div>
-                                <div className={`col ${styles.hour}`}>
-                                    <label htmlFor='close-hour' className="form-label">Giờ đóng cửa</label>
-                                    <input id="close-hour" className="form-control" placeholder='17:00'></input>
-                                </div>
-                            </div>}
+                        </div>
+                        {currentStep === 0 && <div className={styles['hour-input']}>
+                            <div className={`col ${styles.hour}`}>
+                                <label htmlFor='open-hour' className="form-label">Giờ mở cửa</label>
+                                <input id="open-hour" className="form-control" placeholder='7:00'></input>
+                            </div>
+                            <div className={`col ${styles.hour}`}>
+                                <label htmlFor='close-hour' className="form-label">Giờ đóng cửa</label>
+                                <input id="close-hour" className="form-control" placeholder='17:00'></input>
+                            </div>
+                        </div>}
 
-                        </div>
                     </div>
-                    <div className="row">
-                        <div className="col" style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end", marginTop: "1rem" }}>
-                            {!isFirstStep && <button type="button" className="btn btn-secondary" onClick={back}>Back</button>}
-                            {!isFinalStep && <button type="button" className="btn btn-primary" onClick={next}>Next</button>}
-                            {isFinalStep && <button type="submit" className="btn btn-primary">Submit</button>}
-                        </div>
+                    <div className={styles['button-container']} style={{ display: "flex", gap: ".5rem", justifyContent: "flex-end", marginTop: "1rem" }}>
+                        {!isFirstStep && <button type="button" className="btn btn-secondary" onClick={back}>Back</button>}
+                        {!isFinalStep && <button type="button" className="btn btn-primary" onClick={next}>Next</button>}
+                        {isFinalStep && <button type="submit" className="btn btn-primary">Submit</button>}
                     </div>
                 </div>
             </form >
             <Footer />
-        </div>
+        </div >
     )
 }
 

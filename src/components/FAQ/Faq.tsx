@@ -7,7 +7,7 @@ function FAQ() {
             <h1 style={{ textAlign: 'center', marginBottom: "40px"}}>Câu hỏi thường gặp</h1>
             <Flex justifyContent="center" alignItems="center" >
                 <Accordion allowToggle>
-                    <AccordionItem style={{ width: "50vw" }}>
+                    <AccordionItem style={{ width: "60vw" }}>
                         <h2>
                             <AccordionButton style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "20px"}}>
                                 <Box textAlign="left" w={800} style={{ fontSize: "20px" }}>
@@ -21,7 +21,7 @@ function FAQ() {
                         </AccordionPanel>
                     </AccordionItem>
 
-                    <AccordionItem>
+                    <AccordionItem style={{ width: "60vw" }}>
                         <h2>
                             <AccordionButton style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "20px" }}>
                                 <Box textAlign="left" w={800} style={{ fontSize: "20px" }}>

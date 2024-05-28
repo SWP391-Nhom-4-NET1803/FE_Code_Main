@@ -46,7 +46,7 @@ export default function Footer() {
       color={useColorModeValue("gray.700", "gray.200")}
     >
       <Container as={Stack} maxW={"6xl"} py={10}>
-        <SimpleGrid style={{display: "flex", justifyContent:"space-evenly"}} spacing={8}>
+        <SimpleGrid style={{display: "flex", justifyContent:"space-evenly", color: "white"}} spacing={8}>
           <Stack align={"flex-start"}>
             <ListHeader>Về SmileCare</ListHeader>
             <Link href={"#"}>Giới thiệu về SmileCare</Link>
