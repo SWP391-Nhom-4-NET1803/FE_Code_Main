@@ -105,7 +105,7 @@ const BookingPageContent = () => {
                             const paymentResponse = await createPayment(paymentPayload);
                             if (paymentResponse && paymentResponse.content) {
                                 console.log(paymentResponse)
-                                // window.location.href = paymentResponse.content;
+                                window.location.href = paymentResponse.content;
                             } else {
                                 console.error('Invalid payment response:', paymentResponse);
                             }
@@ -114,6 +114,7 @@ const BookingPageContent = () => {
                         }
                     } else {
                         console.error('Unexpected content format:', response.content);
+
                     }
                 } else {
                     try {

@@ -27,7 +27,7 @@ const PaginatedClinicList = () => {
     const fetchTotalClinics = async () => {
         try {
             const { content } = await getAllClinics(searchTerm, 0, 0); 
-            const verifiedClinics = content.filter(clinic => clinic.status === 'verified');
+            const verifiedClinics = content; //.filter(clinic => clinic.status === 'verified');
             const totalCount = verifiedClinics.length;
             setNumberOfPages(Math.ceil(totalCount / clinicPerPage));  
         } catch (error) {
@@ -40,6 +40,8 @@ const PaginatedClinicList = () => {
             const { content } = await getAllClinics(searchTerm, clinicPerPage, currentPage);
             const verifiedClinics = content.filter(clinic => clinic.status === 'verified');
 
+            console.log(`fetching clinic ${currentPage}`);
+            console.log(content)
             setClinics(verifiedClinics);
         } catch (error) {
             console.error('Error fetching clinics:', error);

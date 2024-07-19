@@ -28,6 +28,7 @@ import { useEffect, useRef, useState } from "react";
 import { NestedListItems } from "../components/NestedListMenu";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
 import { AppointmentViewModelFetch, getDentistInfo, getClinicAppointments } from "../../../../utils/api/ClinicOwnerUtils";
+import { IAppointmentModel } from "../../../../utils/Interfaces/interfaces";
 
 const drawerWidth: number = 270;
 
@@ -84,7 +85,7 @@ const Dashboard = () => {
   const [fullname, setFullname] = useState('');
   const [loading, setLoading] = useState(true);
   const [staff, setStaff] = useState<DentistInfoViewModel[]>();
-  const [appointments, setAppointments] = useState<AppointmentViewModelFetch[]>([]);
+  const [appointments, setAppointments] = useState<IAppointmentModel[]>([]);
   const barChartRef = useRef<HTMLCanvasElement>(null);
   const pieChartRef = useRef<HTMLCanvasElement>(null);
   const lineChartRef = useRef<HTMLCanvasElement>(null);
@@ -94,8 +95,26 @@ const Dashboard = () => {
   const lineChartInstance = useRef<Chart | null>(null);
 
   const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+  const now = new Date();
+  now.setDate(now.getDate())
+  console.log(`${now.getDate()}/${now.getMonth()}/${now.getFullYear()}`)
+  const firstDayOfTheWeek = now.getDate() - now.getDay();
+  const lastDayOfTheWeek = firstDayOfTheWeek + 6;
+
+  const first = new Date(now.setDate(firstDayOfTheWeek));
+  const last = new Date(now.setDate(lastDayOfTheWeek));
+
   const appointmentCounts = daysOfWeek.map((day, index) => {
-    return appointments.filter(appt => new Date(appt.appointmentDate).getDay() === index).length;
+
+    const asss = appointments.filter(x => new Date(x.appointmentDate).getMonth() === now.getMonth() && new Date(x.appointmentDate).getFullYear() == now.getFullYear())
+
+    console.log(asss);
+
+    const count = appointments.filter(appt => {
+      return new Date(appt.appointmentDate).getDay() === index && first <= new Date(appt.appointmentDate) && new Date(appt.appointmentDate) <= last}).length;
+    return count;
+
   });
   const barData = {
     labels: daysOfWeek,
@@ -172,9 +191,15 @@ const Dashboard = () => {
     datasets: [
       {
         label: 'Doanh thu',
-        data: appointmentCounts.map((count, index) => appointments
+        data: daysOfWeek.map((day, index) => {
+          const count = appointments.filter(appt => {
+            return new Date(appt.appointmentDate).getDay() === index && first <= new Date(appt.appointmentDate) && new Date(appt.appointmentDate) <= last})
+            .reduce((sum, appt) => sum + appt.finalFee, 0);
+          return count;
+        }
+        /*appointmentCounts.map((count, index) => appointments
           .filter(appt => new Date(appt.appointmentDate).getDay() === index)
-          .reduce((sum, appt) => sum + appt.finalFee, 0)
+          */
         ),
         fill: false,
         borderColor: '#007bff',
@@ -245,7 +270,7 @@ const Dashboard = () => {
     return upcomingAppointments.length;
   };
 
-  const getAppointmentStatus = (appts) => {
+  const getAppointmentStatus = (appts: IAppointmentModel[]) => {
     const finished = appts.filter(appt => appt.bookingStatus === "finished").length;
     const cancelled = appts.filter(appt => appt.bookingStatus === "cancelled").length;
     const pending = appts.filter(appt => appt.bookingStatus === "pending").length;
@@ -253,19 +278,27 @@ const Dashboard = () => {
     return { finished, cancelled, pending, booked };
   };
 
-  const getMonthlyRevenue = (appts) => {
-    const currentMonth = new Date().getMonth();
+  const getMonthlyRevenue = (appts: IAppointmentModel[]) => {
+    const currentMonth = new Date(Date.now());
+
+    console.log(currentMonth)
+
+
+    console.log(appts)
+
+    console.log(appts.reduce((x, appt) => x + appt.finalFee, 0))
+
     return appts
-      .filter(appt => new Date(appt.appointmentDate).getMonth() === currentMonth)
+      .filter(appt => {return new Date(appt.appointmentDate).getMonth() === currentMonth.getMonth() && new Date(appt.appointmentDate).getFullYear() == currentMonth.getFullYear()})
       .reduce((sum, appt) => sum + appt.finalFee, 0);
   };
 
-  const getAverageRevenuePerAppointment = (appts) => {
+  const getAverageRevenuePerAppointment = (appts: IAppointmentModel[]) => {
     const totalRevenue = appts.reduce((sum, appt) => sum + appt.finalFee, 0);
     return appts.length > 0 ? totalRevenue / appts.length : 0;
   };
 
-  const getNewPatients = (appts) => {
+  const getNewPatients = (appts: IAppointmentModel[]) => {
     const uniquePatients = new Set(appts.map(appt => appt.customerId));
     return uniquePatients.size;
   };
@@ -445,8 +478,8 @@ const Dashboard = () => {
                   <div className={styles.metricBox}>
                     <div className={styles.title}><strong>Tài chính</strong></div>
                     <div className={styles.smallContent}>
-                      <strong>Doanh thu tháng này: </strong> {getMonthlyRevenue(appointments).toLocaleString()} VND<br />
-                      <strong>Doanh thu trung bình/lịch hẹn: </strong> {getAverageRevenuePerAppointment(appointments).toLocaleString()} VND
+                      <strong>Doanh thu tháng này: </strong> {appointments.filter(x => new Date(x.appointmentDate).getMonth() === now.getMonth() && new Date(x.appointmentDate).getFullYear() == now.getFullYear()).reduce((sum, apt) => sum + apt.finalFee, 0).toLocaleString()} VND<br />
+                      <strong>Doanh thu trung bình/lịch hẹn: </strong> {getAverageRevenuePerAppointment(appointments.filter(x => new Date(x.appointmentDate).getMonth() === now.getMonth() && new Date(x.appointmentDate).getFullYear() == now.getFullYear())).toLocaleString()} VND
                     </div>
                   </div>
                   <div className={`${styles.chart} ${styles.lineChart}`}>

@@ -438,7 +438,7 @@ export const enableClinicService = async (serviceId: string): Promise<void> => {
     // return await apiCallWithTokenRefresh(apiCall);
 }
 
-export const updateClinicService = async (serviceInfo: ClinicServiceInfoModel): Promise<void> => {
+export const updateClinicService = async (serviceInfo: ClinicServiceInfoModel): Promise<object | null> => {
     const apiCall = async () => {
         const api_url = `${connection_path.base_url}${connection_path.clinic.put_clinic_service}`;
 
@@ -596,14 +596,9 @@ export const getDentistInfo = async (): Promise<IDentistModel | null> => {
             return data;
         })
         .catch((error: unknown) => {
-            if (error instanceof AxiosError)
+            if (error instanceof AxiosError && error.response?.status == 401)
             {
-                if (error.status == 401)
-                {
-                    throw error;
-                }
-
-                console.error(error.response?.data);
+                throw error;
             }
             
             return null;
@@ -611,7 +606,8 @@ export const getDentistInfo = async (): Promise<IDentistModel | null> => {
 
         return response_data;
     }
-    return apiCallWithTokenRefresh(apiCall);
+
+    return await apiCallWithTokenRefresh(apiCall) as IDentistModel | null;
 };
 
 export const getAllCategories = async (): Promise<IServiceCategoryModel[]> => {
@@ -632,7 +628,7 @@ export const getAllCategories = async (): Promise<IServiceCategoryModel[]> => {
             return data;
         })
         .catch((error: unknown) => {
-            if (error instanceof AxiosError)
+            if (error instanceof AxiosError && error.response?.status === 401)
             {
                 console.error(error.response?.data)
             }
@@ -644,7 +640,7 @@ export const getAllCategories = async (): Promise<IServiceCategoryModel[]> => {
         return response_data;
     }
 
-    return await apiCallWithTokenRefresh(apiCall);
+    return await apiCallWithTokenRefresh(apiCall) as IServiceCategoryModel[];
 };
 
 export const getClinicServices = async (clinicId: number): Promise<ClinicServiceInfoModel[]> => {
@@ -676,7 +672,7 @@ export const getClinicServices = async (clinicId: number): Promise<ClinicService
         return response_data;
     }
     
-    return await apiCallWithTokenRefresh(apiCall);
+    return await apiCallWithTokenRefresh(apiCall) as ClinicServiceInfoModel[];
 };
 
 export const getClinicServiceById = async (serviceId: string): Promise<ClinicServiceInfoModel | null> => {
@@ -684,7 +680,7 @@ export const getClinicServiceById = async (serviceId: string): Promise<ClinicSer
         const configuration: AxiosRequestConfig = {
             method: 'GET',
             baseURL: connection_path.base_url,
-            url: `{connection_path.clinic.get_clinic_service}/${serviceId}`,
+            url: `${connection_path.clinic.get_clinic_service}/${serviceId}`,
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -708,5 +704,5 @@ export const getClinicServiceById = async (serviceId: string): Promise<ClinicSer
 
         return response_data;
     }
-    return await apiCallWithTokenRefresh(apiCall);
+    return await apiCallWithTokenRefresh(apiCall) as ClinicServiceInfoModel | null;
 }

@@ -106,6 +106,24 @@ export interface CheckoutFormProps {
 //  ========================== Interface based on Backend APIs responses and request interfaces. ==========================
 
 //  ===== Users
+export interface IUserModel {
+    userId: number,
+    customerId: number | null,
+    dentistId: number | null,
+    clinicId: number | null,
+    role: number,
+    fullname: string | null,
+    username: string,
+    email: string,
+    phone: string,
+    insurance: string,
+    birthdate: string,
+    sex: string,
+    joinedDate: string,
+    isActive: boolean,
+    isRemoved: boolean,
+}
+
 export interface ICustomerModel {
     customerId: number;
     userId: number;
@@ -139,7 +157,7 @@ export interface ICustomerUpdateModel {
     phone: string | null;
     email: string | null;
     insurance: string | null;
-    birthdate: Date | null;
+    birthdate: string | null;
     sex: string | null;
 }
 
@@ -185,10 +203,10 @@ export interface IAppointmentModel {
     appointmentType: string,
     customerFullName: string,
     dentistFullname: string,
-    appointmentDate: Date,
-    creationTime: Date,
-    appointmentTime: Date,
-    expectedEndTime: Date,
+    appointmentDate: string,
+    creationTime: string,
+    appointmentTime: string,
+    expectedEndTime: string,
     dentistNote: string | null,
     clinicName: string,
     clinicAddress: string,
@@ -210,8 +228,8 @@ export interface IAppointmentViewModel {
     appointmentType: string,
     customerFullname: string | null,
     dentistFullname: string,
-    appointmentDate: Date,
-    creationTime: Date,
+    appointmentDate: string,
+    creationTime: string,
     appointmentTime: string,
     expectedEndTime: string,
     finalFee: number;
@@ -263,10 +281,17 @@ export interface IPaymentModel {
     appointmentId: string,
     amount: number,
     info: string,
-    expiration: Date,
-    createdTime: Date,
+    expiration: string,
+    createdTime: string,
     status: string
 }
+
+// ===== Tokens
+export interface IAuthTokens {
+    accessToken: string,
+    refreshToken: string
+}
+
 
 //  ===== Admin Repors
 

@@ -178,8 +178,6 @@ const ClinicManagement = () => {
         const result = await getAllClinicInfo(name, page, page_size, "verified");
         const total = await getAllClinicInfo('', 1,  2147483647, 'verified');
 
-        console.log(Math.ceil(total.length/5))
-
         setVerifiedClinics(result);
         setCurrentPageVerified(page!);
         setTotalPagesVerified(Math.ceil(total.length/5));
@@ -390,7 +388,7 @@ const ClinicManagement = () => {
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
                                             <td style={{ width: '25%' }}>{clinic.name}</td>
-                                            <td style={{ width: '20%' }}>{clinic.ownerName}</td>
+                                            <td style={{ width: '20%' }}>{(clinic.ownerName as string) != '' ? clinic.ownerName : "--"}</td>
                                             <td style={{ width: '27%' }}>
                                             {!clinic.working ? (
                                                     <p>
@@ -472,7 +470,7 @@ const ClinicManagement = () => {
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
                                             <td style={{ width: '25%' }}>{clinic.name}</td>
-                                            <td style={{ width: '20%' }}>{clinic.ownerName}</td>
+                                            <td style={{ width: '20%' }}>{(clinic.ownerName as string) != '' ? clinic.ownerName : "--"}</td>
                                             <td style={{ width: '27%' }}>
                                                 {!clinic.working ? (
                                                     <p>

@@ -12,7 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "../components/listItems";
 import styles from "./UserManagement.module.css";
-import { UserInfoModel, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
+import { UserInfoModel, getAllUserInfo, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
 import { Button } from 'reactstrap';
 import { useEffect, useState } from "react";
 import CheckIcon from '@mui/icons-material/Check';
@@ -85,7 +85,7 @@ const UserManagement = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const data = await getAllUsers();
+            const data = await getAllUserInfo(null, null, null);
             if (typeof data === 'string') {
                 setError(data);
             } else {
@@ -208,8 +208,8 @@ const UserManagement = () => {
                                 <tbody>
                                     {
                                         users.map((user) => (
-                                            <tr key={user.id} className={styles.tableRow}>
-                                                <td>{user.id}</td>
+                                            <tr key={user.userId} className={styles.tableRow}>
+                                                <td>{user.userId}</td>
                                                 <td>{user.username}</td>
                                                 <td>{user.joinedDate ? formatDate(user.joinedDate) : ''}</td>
                                                 <td>{user.role}</td>

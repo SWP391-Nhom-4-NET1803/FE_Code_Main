@@ -1,9 +1,10 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import styles from './Profile.module.css'
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
-import { IUserAccount, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
-import { getUserData } from '../../../../utils/api/UserAccountUtils';
+import { IUserAccount } from '../../../../utils/interfaces/User/UserDefinition';
+import { getCustomerInfo, getUserData } from '../../../../utils/api/UserAccountUtils';
 import { useNavigate } from 'react-router-dom';
+import { ICustomerModel } from '../../../../utils/Interfaces/interfaces';
 
 interface ProfileProps {
     setActiveIndex: (index: number) => void;
@@ -11,7 +12,7 @@ interface ProfileProps {
 
 const Profile = ({ setActiveIndex }: ProfileProps) => {
 
-    const [data, setData]: [IUserAccount | null, Dispatch<SetStateAction<IUserAccount>>] = useState(default_data);
+    const [data, setData]: [ICustomerModel | null, Dispatch<SetStateAction<ICustomerModel | null>>] = useState<ICustomerModel | null>();
     const navigator = useNavigate();
 
     type AvatarState = {
@@ -37,7 +38,7 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
 
     const fetchUserData = () => {
         try {
-            getUserData().then((user: IUserAccount) => {
+            getCustomerInfo().then((user: ICustomerModel | null) => {
                 setData(user);
             });
         } catch (error) {
@@ -61,8 +62,8 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
                     <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
 
                     <span className={styles.userProfileGeneralInfo}>
-                        <h2 style={{ margin: '0', fontSize: '2em', fontWeight: 'bold', textAlign: 'left' }}>{data.username}</h2>
-                        <p style={{ fontSize: '1em', textAlign: 'left' }}>Mã bệnh nhân: {data.id}</p>
+                        <h2 style={{ margin: '0', fontSize: '2em', fontWeight: 'bold', textAlign: 'left' }}>{data?.username}</h2>
+                        <p style={{ fontSize: '1em', textAlign: 'left' }}>Mã bệnh nhân: {data?.customerId}</p>
                     </span>
                 </div>
 
@@ -78,19 +79,19 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
                         <tbody>
                             <tr style={{ padding: '0.5em 1em', width: '50%' }}>
                                 <td className={styles.tableFieldName}>Họ và tên</td>
-                                <td className={styles.tableFieldValue}>{data.fullname ?? "--"}</td>
+                                <td className={styles.tableFieldValue}>{data?.fullname ?? "--"}</td>
                             </tr>
                             <tr style={{ padding: '0.5em 1em', width: '50%' }}>
                                 <td className={styles.tableFieldName}>Số điện thoại</td>
-                                <td className={styles.tableFieldValue}>{data.phone ?? "--"}</td>
+                                <td className={styles.tableFieldValue}>{data?.phone ?? "--"}</td>
                             </tr>
                             <tr style={{ padding: '0.5em 1em', width: '50%' }}>
                                 <td className={styles.tableFieldName}>Giới tính</td>
-                                <td className={styles.tableFieldValue}>{data.sex ?? "--"}</td>
+                                <td className={styles.tableFieldValue}>{data?.sex ?? "--"}</td>
                             </tr>
                             <tr style={{ padding: '0.5em 1em', width: '50%' }}>
                                 <td className={styles.tableFieldName}>Ngày sinh</td>
-                                <td className={styles.tableFieldValue}>{data.birthdate ?? "--"}</td>
+                                <td className={styles.tableFieldValue}>{data?.birthdate ?? "--"}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -106,11 +107,11 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
                         <tbody>
                             <tr style={{ padding: '0.5em 1em', width: '50%' }}>
                                 <td className={styles.tableFieldName} >Mã BHYT</td>
-                                <td className={styles.tableFieldValue} >{data.insurance ?? "--"}</td>
+                                <td className={styles.tableFieldValue} >{data?.insurance ?? "--"}</td>
                             </tr>
                             <tr style={{ padding: '0.5em 1em', width: '50%' }}>
                                 <td className={styles.tableFieldName} >Email</td>
-                                <td className={styles.tableFieldValue}>{data.email ?? "--"}</td>
+                                <td className={styles.tableFieldValue}>{data?.email ?? "--"}</td>
                             </tr>
                         </tbody>
                     </table>

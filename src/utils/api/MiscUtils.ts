@@ -1,9 +1,9 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments';
 import { ClinicInfoModel, ClinicToDisplay } from '../interfaces/ClinicRegister/Clinic';
 import { apiCallWithTokenRefresh } from './apiCallWithRefreshToken';
 
-export async function getClinicInformation(id: string): Promise<ClinicInfoModel | null> {
+export async function getClinicInformation(id: number): Promise<ClinicInfoModel | null> {
     const apiCall = async () => {
         const api_url = connection_path.base_url + connection_path.clinic.get_clinic_general_info + id;
         const configuration: AxiosRequestConfig = {
@@ -44,30 +44,34 @@ export const getAllClinics = async (
                     name: searchTerm || '',
                     open: open || '',
                     close: close || '',
-                    page_size: pageSize || 100,
+                    page_size:  pageSize || 100,
                     page: page || 1
                 }
             });
 
-            if (response.status === 200) {
-                return {
-                    content: response.data.content,
-                    totalCount: response.data.totalCount
-                };
-            } else if (response.status === 400) {
-                throw new Error('Failed to get clinic information');
-                // navigator('error')
-            }
+            console.log(response.data)
+
+            return {
+                content: response?.data.content ?? null,
+                totalCount: response?.data.content?.totalCount ?? 0,
+            };
         } catch (error) {
-            if (error instanceof Error) {
+            if (error instanceof AxiosError) {
                 console.error('Error fetching clinics:', error.message);
             }
+
             throw error;
         }
     }
     return await apiCallWithTokenRefresh(apiCall);
 };
 
+export const getClinicWithOwner = async (ownerId: number) =>
+{
+    const config: AxiosRequestConfig = {
+        url: connection_path.base_url + connection_path.clinic.get_clinic_with_owner_id
+    }
+}
 
 export const cancelAppointment = async (appointmentId: string): Promise<void> => {
     const api_url = 'https://localhost:7163/cancel';

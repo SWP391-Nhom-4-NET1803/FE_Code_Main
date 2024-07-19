@@ -1,4 +1,4 @@
-import { IAdminClinicList, IAPIResponseModel, IClinicModel } from './../Interfaces/interfaces';
+import { IAdminClinicList, IAPIResponseModel, IClinicModel, ICustomerModel, IDentistModel, IUserInfoModel } from './../Interfaces/interfaces';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { connection_path } from '../../constants/developments';
 import { apiCallWithTokenRefresh } from './apiCallWithRefreshToken';
@@ -208,7 +208,7 @@ export const getAllUsers = async (): Promise<UserInfoModel[]> => {
             method: 'GET',
             url: api_url,
             headers: {
-                'Authorization': `${accessToken}`,
+                'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json' // Set content type as JSON
             }
         };
@@ -242,14 +242,14 @@ export const getAllUsers = async (): Promise<UserInfoModel[]> => {
 
 export const getAllDentist = async (): Promise<UserInfoModel[]> => {
     // const apiCall = async () => {
-
-        const api_url: string = `${connection_path.base_url}${connection_path.admin.get_dentists}`;
-
         const configuration: AxiosRequestConfig = {
             method: 'GET',
-            url: api_url,
+            baseURL: connection_path.base_url,
+            url: connection_path.admin.get_dentists,
+            params: {},
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
             }
         };
 
@@ -288,7 +288,8 @@ export const getAllCustomer = async (): Promise<UserInfoModel[]> => {
             method: 'GET',
             url: api_url,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
             }
         };
         try {
@@ -299,19 +300,22 @@ export const getAllCustomer = async (): Promise<UserInfoModel[]> => {
                 const errorMessage = `Failed to fetch customers: ${response.statusText}`;
                 throw new Error(errorMessage);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             let errorMessage = '';
-            if (error.response) {
-                if (error.response.status === 401) {
-                    errorMessage = 'Unauthorized: User is not authenticated.';
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    if (error.response.status === 401) {
+                        errorMessage = 'Unauthorized: User is not authenticated.';
+                    } else {
+                        errorMessage = `HTTP Error ${error.response.status}: ${error.response.statusText}`;
+                    }
+                } else if (error.request) {
+                    errorMessage = 'Network Error: No response received from the server.';
                 } else {
-                    errorMessage = `HTTP Error ${error.response.status}: ${error.response.statusText}`;
+                    errorMessage = `Error: ${error.message}`;
                 }
-            } else if (error.request) {
-                errorMessage = 'Network Error: No response received from the server.';
-            } else {
-                errorMessage = `Error: ${error.message}`;
             }
+            
             throw new Error(errorMessage);
 
         }
@@ -333,79 +337,232 @@ export const verifyClinicStatus = async (clinicId: number): Promise<IClinicModel
 
         const response_data: IClinicModel | null = await axios(configuration)
         .then((res: AxiosResponse<IAPIResponseModel<IClinicModel>>) => {
-
+            return res.data.content;
         })
         .catch((error: unknown) => {
-            if (error instanceof AxiosError) {
-
-                if (error.status == 401)
-                {
-                    throw error;
-                }
-
-                return null;
+            if (error instanceof AxiosError && error.response?.status === 401) {
+                    throw new Error('Possible expired token');
             }
+
+            return null;
         });
 
         return response_data;
     }
 
-    return await apiCallWithTokenRefresh(apiCall);
+    return await apiCallWithTokenRefresh(apiCall) as IClinicModel | null;
 };
 
-// ======= Additional support incoming!
 export const getAllClinicInfo = async (name: string | null, page: number | null, page_size: number | null, status: "verified" | "unverified" | null = null): Promise<IClinicModel[]> => {
-    const request_config: AxiosRequestConfig = {
-        baseURL: connection_path.base_url,
-        params: {},
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-            'Content-Type': 'application/json'
+    const APICall = async () => {
+        const request_config: AxiosRequestConfig = {
+            baseURL: connection_path.base_url,
+            params: {},
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
         }
-    }
 
-    if (name)
-    {
-        request_config.params.name = name;
-    }
-
-    if (page_size)
-    {
-        request_config.params.pageSize = page_size;
-    }
-
-    if (page)
-    {
-        request_config.params.page = page;
-    }
-
-    if (status == 'verified') {
-        request_config.url = connection_path.admin.get_verified_clinic;
-    }
-    else if (status == 'unverified') {
-        request_config.url = connection_path.admin.get_unverified_clinic;
-    }
-    else {
-        request_config.url = connection_path.admin.get_clinics;
-    }
-
-    const return_data: IClinicModel[] = await axios(request_config)
-    .then((res: AxiosResponse<IAPIResponseModel<IClinicModel[] | null>>) => 
+        if (name)
         {
-            const data: IClinicModel[] = res.data.content!;
-            console.log(`Axios response: ${res.status}`);
-            console.log(data);
-            return data;
+            request_config.params.name = name;
         }
-    )
-    .catch( (error: AxiosError) =>
-    {
-        const data: IClinicModel[] = [];
-        console.log(`${error.response?.status}`);
-        console.log(error.response?.data);
-        return data;  
-    }
-    );
 
-    return return_data;
+        if (page_size)
+        {
+            request_config.params.pageSize = page_size;
+        }
+
+        if (page)
+        {
+            request_config.params.page = page;
+        }
+
+        if (status == 'verified') {
+            request_config.url = connection_path.admin.get_verified_clinic;
+        }
+        else if (status == 'unverified') {
+            request_config.url = connection_path.admin.get_unverified_clinic;
+        }
+        else {
+            request_config.url = connection_path.admin.get_clinics;
+        }
+
+        const return_data: IClinicModel[] = await axios(request_config)
+        .then((res: AxiosResponse<IAPIResponseModel<IClinicModel[] | null>>) => 
+            {
+                const data: IClinicModel[] = res.data.content!;
+                return data;
+            }
+        )
+        .catch( (error: unknown) =>
+        {
+            if (error instanceof AxiosError && error.response?.status === 401)
+            {
+                throw Error('Possible expired token');
+            }
+
+            console.log(error);
+
+            const data: IClinicModel[] = [];
+
+            return data;  
+        });
+        
+        return return_data;
+    }
+
+    return await apiCallWithTokenRefresh(APICall) as IClinicModel[];
 }
+
+export const getAllCustomerInfo = async (name: string | null = '', page: number | null, page_size: number | null): Promise<ICustomerModel[] | null> => {
+    const APICall = async () => {
+        const request_config: AxiosRequestConfig = {
+            baseURL: connection_path.base_url,
+            url: connection_path.admin.get_customer,
+            params: {},
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        }
+
+        request_config.params.name = name;
+
+        if (page_size)
+        {
+            request_config.params.pageSize = page_size;
+        }
+
+        if (page)
+        {
+            request_config.params.page = page;
+        }
+
+        const return_data: ICustomerModel[] = await axios(request_config)
+        .then((res: AxiosResponse<IAPIResponseModel<ICustomerModel[] | null>>) => 
+            {
+                const data: ICustomerModel[] = res.data.content!;
+                return data;
+            }
+        )
+        .catch( (error: unknown) =>
+        {
+            if (error instanceof AxiosError && error.response?.status == 401)
+            {
+                throw new Error('Possible Expired Token');
+            }
+
+            const data: ICustomerModel[] = [];
+            return data;  
+        });
+
+        return return_data;
+    }
+
+    return await apiCallWithTokenRefresh(APICall) as ICustomerModel[] | null;
+}
+
+export const getAllDentistInfo = async (name: string | null, page: number | null, page_size: number | null): Promise<IDentistModel[] | null> => {
+    const APICall = async () => {
+        const request_config: AxiosRequestConfig = {
+            baseURL: connection_path.base_url,
+            url: connection_path.admin.get_dentists,
+            params: {
+                name: name
+            },
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        }
+
+        request_config.params.name = name;
+
+
+        if (page_size)
+        {
+            request_config.params.pageSize = page_size;
+        }
+
+        if (page)
+        {
+            request_config.params.page = page;
+        }
+
+        const return_data: IDentistModel[] = await axios(request_config)
+        .then((res: AxiosResponse<IAPIResponseModel<IDentistModel[] | null>>) => 
+            {
+                const data: IDentistModel[] = res.data.content!;
+                return data;
+            }
+        )
+        .catch( (error: unknown) =>
+        {
+            if (error instanceof AxiosError && error.response?.status == 401)
+            {
+                throw new Error('Possible Expired Token');
+            }
+
+            const data: IDentistModel[] = [];
+            return data;  
+        });
+
+        return return_data;
+    }
+
+    return await apiCallWithTokenRefresh(APICall) as IDentistModel[] | null;
+}
+
+export const getAllUserInfo = async(name: string | null, page: number | null, page_size: number | null): Promise<IUserInfoModel[] | null> => {
+    const APICall = async () => {
+        const request_config: AxiosRequestConfig = {
+            baseURL: connection_path.base_url,
+            url: connection_path.admin.get_users,
+            params: {},
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        }
+
+        if (name)
+        {
+            request_config.params.name = name;
+        }
+
+        if (page_size)
+        {
+            request_config.params.pageSize = page_size;
+        }
+
+        if (page)
+        {
+            request_config.params.page = page;
+        }
+
+        const return_data: IUserInfoModel[] = await axios(request_config)
+        .then((res: AxiosResponse<IAPIResponseModel<IDentistModel[] | null>>) => 
+            {
+                const data: IUserInfoModel[] = res.data.content!;
+                return data;
+            }
+        )
+        .catch( (error: unknown) =>
+        {
+            if (error instanceof AxiosError && error.response?.status == 401)
+            {
+                throw new Error('Possible Expired Token');
+            }
+
+            const data: IUserInfoModel[] = [];
+            return data;  
+        });
+
+        return return_data;
+    }
+
+    return await apiCallWithTokenRefresh(APICall) as IUserInfoModel[] | null;
+}
+

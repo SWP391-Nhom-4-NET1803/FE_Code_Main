@@ -26,6 +26,7 @@ import { Button } from "reactstrap";
 import { DentistInfoViewModel } from "../../../../utils/api/BookingRegister";
 import { slots } from "../../data";
 import { MenuItem, Select } from "@mui/material";
+import { getClinicInformation, getClinicWithOwner } from "../../../../utils/api/MiscUtils";
 
 const drawerWidth: number = 270;
 
@@ -168,13 +169,15 @@ export default function AppointmentSchedule() {
     const fetchData = async () => {
       try {
         const dentistInfo = await getDentistInfo();
-        const clinicId = dentistInfo.content.clinicId;
+        const clinicId = await getClinicInformation(dentistInfo?.clinicId);
 
-        const fetchedSlots = await getAllClinicSlots(clinicId);
+        console.log(clinicId)
+
+        const fetchedSlots = await getAllClinicSlots(clinicId?.id);
         setClinicSlots(fetchedSlots);
 
         const fetchedAppointments = await getClinicAppointments(
-          clinicId,
+          clinicId?.id,
         );
 
         const appointmentsWithSlotTimes = fetchedAppointments.map(appointment => {

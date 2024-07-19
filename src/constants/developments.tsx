@@ -14,7 +14,7 @@ export const connection_path = {
     
     forgetpass: {
         request: "/user/password/request",
-        token: "/user/password/check-token",
+        token: "/user/check-token",
         reset: "/user/password/reset"
     },
 
@@ -25,7 +25,7 @@ export const connection_path = {
         activate_user: "/customer/activate",
         inactivate_user: "/user/inactivate",
         clinic_register: "/clinic/register",
-
+        update_password: '/user/password'
     },
 
     invoker: {
@@ -41,6 +41,7 @@ export const connection_path = {
         active_staff: "/dentist/staff/activate",
         deactive_staff: "/dentist/staff/deactivate",
         get_clinic_general_info: "/clinic/",
+        get_clinic_with_owner_id: "/clinic/owner",
         put_clinic_general_info: "/clinic",
         get_all_clinic: "/clinic/search",
         get_clinic_staff: "/dentist/staff",
