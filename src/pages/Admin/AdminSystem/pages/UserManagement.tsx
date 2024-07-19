@@ -197,7 +197,6 @@ const UserManagement = () => {
                                         <th style={{ width: '10%' }}>Vai trò</th>
                                         <th style={{ width: '15%' }}>Họ tên</th>
                                         <th style={{ width: '10%' }}>Là nha sĩ</th>
-                                        <th style={{ width: '11%' }}>Là chủ phòng khám</th>
                                         <th style={{ width: '19%' }}>
                                             <Box className={styles.tooltip}>
                                                 Trạng thái
@@ -217,7 +216,6 @@ const UserManagement = () => {
                                                 <td>
                                                     {user.role === 'Customer' ? <CloseIcon /> : (user.role === 'Dentist' && !user.isOwner ? <CheckIcon /> : <CheckIcon />)}
                                                 </td>
-                                                <td>{user.isOwner ? <CheckIcon /> : <CloseIcon />}</td>
                                                 <td>
                                                     <Button
                                                         className={user.isActive ? styles.confirmedButton : styles.unconfirmedButton}

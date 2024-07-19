@@ -28,30 +28,14 @@ export const addCategory = async (category: ClinicServiceCategoryRegistrationMod
             }
         };
 
-        try {
-            const response: AxiosResponse = await axios(configuration);
-            if (response.status === 200) {
-                return response.data.content;
-                alert('Category added successfully');
-            } else {
-                const errorMessage = `Failed to add category: ${response.statusText}`;
-                throw new Error(errorMessage);
-            }
-        } catch (error: any) {
-            let errorMessage = '';
-            if (error.response) {
-                if (error.response.status === 401) {
-                    errorMessage = 'Unauthorized: User is not authenticated.';
-                } else {
-                    errorMessage = `HTTP Error ${error.response.status}: ${error.response.statusText}`;
-                }
-            } else if (error.request) {
-                errorMessage = 'Network Error: No response received from the server.';
-            } else {
-                errorMessage = `Error: ${error.message}`;
-            }
-            throw new Error(errorMessage);
-        }
+        const response: AxiosResponse = await axios(configuration)
+        .then(x =>x.data.content)
+        .catch((error: unknown) => {
+            return null;
+        });
+
+        return response;
+
     }
     return await apiCallWithTokenRefresh(apiCall)
 };

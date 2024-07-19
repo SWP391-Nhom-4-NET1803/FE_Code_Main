@@ -110,8 +110,7 @@ const ClinicServices = () => {
                 setNewCategoryName(''); // Clear input field after successful addition
                 alert('Category added successfully');
             } else {
-                console.error('Invalid data format received:', data);
-                // Handle error scenario
+                alert("Không thể thêm mới dịch vụ (vui lòng kiểm tra lại nếu dịch vụ đã tồn tại)");
             }
         } catch (error) {
             console.error('Error adding category:', error);

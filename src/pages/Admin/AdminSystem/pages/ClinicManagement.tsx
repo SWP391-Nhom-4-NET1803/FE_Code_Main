@@ -176,7 +176,7 @@ const ClinicManagement = () => {
 
     const fetchVerifiedClinics = async (name: string | null, page_size: number | null, page: number | null = 1): Promise<void> => {
         const result = await getAllClinicInfo(name, page, page_size, "verified");
-        const total = await getAllClinicInfo('', 1,  2147483647, 'verified');
+        const total = await getAllClinicInfo(name, 1,  2147483647, 'verified');
 
         setVerifiedClinics(result);
         setCurrentPageVerified(page!);
@@ -185,7 +185,7 @@ const ClinicManagement = () => {
 
     const fetchUnverifiedClinics = async (name: string = '', page_size: number = Number.MAX_SAFE_INTEGER, page: number = 1): Promise<void> => {
         const result = await getAllClinicInfo(name, page, page_size, "unverified");
-        const total = await getAllClinicInfo('', 1,  2147483647, 'unverified');
+        const total = await getAllClinicInfo(name, 1,  2147483647, 'unverified');
 
         setUnverifiedClinics(result);
         setCurrentPageUnverified(page!);
