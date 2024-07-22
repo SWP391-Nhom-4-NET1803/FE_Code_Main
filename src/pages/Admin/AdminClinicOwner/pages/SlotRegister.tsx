@@ -251,7 +251,7 @@ const SlotRegister = () => {
       try {
         const dentistInfoResponse = await getDentistInfo();
 
-        if (dentistInfoResponse.statusCode === 200) {
+        if (dentistInfoResponse != null) {
 
           const stringId = selectedSlot.clinicSlotId.toString();
 
