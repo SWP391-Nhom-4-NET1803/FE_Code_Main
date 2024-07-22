@@ -23,6 +23,7 @@ import { AppointmentViewModel, getDentistInfo, getAllClinicSlots } from "../../.
 import { getAllDentistAppointments, finishAppointment, noteAppointment, createRecurringAppointment } from "../../../../utils/api/DentistUtils";
 import { cancelAppointment } from "../../../../utils/api/MiscUtils";
 import { ClinicSlotInfoModel } from "../../../../utils/interfaces/ClinicRegister/Clinic";
+import { preventDefault } from "@fullcalendar/core/internal";
 
 const drawerWidth: number = 270;
 
@@ -219,7 +220,7 @@ const AppointmentDetail = () => {
     const handleEditClick = async () => {
         if (isEditable) {
             try {
-                const response = await noteAppointment(appointmentId, note);
+                await noteAppointment(appointmentId, note);
                 await fetchAppointment(appointmentId);
             } catch (error) {
                 console.error('Failed to save the note:', error);
@@ -228,11 +229,11 @@ const AppointmentDetail = () => {
         setIsEditable(!isEditable);
     };
 
-    const handlePatientDetailClick = (appointment: AppointmentViewModel) => { 
+    const handlePatientDetailClick = (appointment: AppointmentViewModel) => {
         console.log(appointment);
         navigate(`/patient/${appointment.customerId}`);
     }
-    
+
     const flattenedSlots = availableSlots.flat();
 
     const getStatusText = (status: string) => {
@@ -340,8 +341,8 @@ const AppointmentDetail = () => {
                                 ? theme.palette.grey[100]
                                 : theme.palette.grey[900],
                         flexGrow: 1,
-                        height: "100vh",
-                        overflow: "auto",
+                        minHeight: "100vh",
+                        overflow: 'auto',
                     }}
                 >
                     {loading ? (
@@ -427,11 +428,13 @@ const AppointmentDetail = () => {
                                         {canEditOrCancel && (
                                             <>
                                                 <Button color="primary" className={styles.editButton} onClick={handleEditClick}>
-                                                    {appointment.isEditable ? 'Lưu' : 'Thêm ghi chú'}
+                                                    {isEditable ? 'Lưu' : 'Thêm ghi chú'}
                                                 </Button>
-                                                <Button color="primary" className={styles.cancelButton} onClick={handleCancelClick}>
-                                                    Hủy lịch khám
-                                                </Button>
+                                                {(appointment.bookingStatus !== 'canceled' && appointment.bookingStatus !== 'finished') && (
+                                                    <Button color="primary" className={styles.cancelButton} onClick={handleCancelClick}>
+                                                        Hủy lịch khám
+                                                    </Button>
+                                                )}
                                                 <Button color="primary" onClick={toggleModal} className={styles.repeatButton}>
                                                     Đặt lịch định kì
                                                 </Button>

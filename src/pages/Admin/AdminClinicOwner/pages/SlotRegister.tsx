@@ -211,8 +211,8 @@ const SlotRegister = () => {
     if (selectedSlot) {
       try {
         const dentistInfoResponse = await getDentistInfo();
+        
         if (dentistInfoResponse != null) {
-
           let updatedSlotInfoModel = [...slotInforModel];
           const existingIndex = updatedSlotInfoModel.findIndex((slots) =>
             slots.some((slot) => slot.clinicSlotId === selectedSlot.clinicSlotId && slot.weekday === selectedSlot.weekday)
@@ -251,7 +251,8 @@ const SlotRegister = () => {
       try {
         const dentistInfoResponse = await getDentistInfo();
 
-        if (dentistInfoResponse != null) {
+
+        if (dentistInfoResponse) {
 
           const stringId = selectedSlot.clinicSlotId.toString();
 

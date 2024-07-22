@@ -342,7 +342,7 @@ const ClinicManagement = () => {
                     <Box className={styles.mainContainer}>
                         <div className={styles.tableContainer}>
                             <div className={styles.tableHeader}>Phòng khám đã xác nhận</div>
-                            <Box className={styles.toolbar}>
+                            {/* <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input
                                         type="text"
@@ -357,7 +357,7 @@ const ClinicManagement = () => {
                                     >Tìm kiếm
                                     </button>
                                 </Box>
-                                {/* <Box className={styles.utilities}>
+                                <Box className={styles.utilities}>
                                     <select className={styles.filterSelect}>
                                         <option value="">Filter</option>
                                         <option value="role1">Role 1</option>
@@ -366,8 +366,8 @@ const ClinicManagement = () => {
                                     <button className={styles.addButton}>
                                         Thêm phòng khám
                                     </button>
-                                </Box> */}
-                            </Box>
+                                </Box>
+                            </Box> */}
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
@@ -423,7 +423,7 @@ const ClinicManagement = () => {
                         </div>
                         <div className={styles.tableContainer}>
                             <div className={styles.tableHeader}>Phòng khám chưa xác nhận</div>
-                            <Box className={styles.toolbar}>
+                            {/* <Box className={styles.toolbar}>
                                 <Box className={styles.searchbar}>
                                     <input
                                         type="text"
@@ -439,7 +439,7 @@ const ClinicManagement = () => {
                                         Tìm kiếm
                                     </button>
                                 </Box>
-                                {/* <Box className={styles.utilities}>
+                                <Box className={styles.utilities}>
                                     <select className={styles.filterSelect}>
                                         <option value="">Filter</option>
                                         <option value="role1">Role 1</option>
@@ -448,8 +448,8 @@ const ClinicManagement = () => {
                                     <button className={styles.addButton}>
                                         Thêm phòng khám
                                     </button>
-                                </Box> */}
-                            </Box>
+                                </Box>
+                            </Box> */}
                             <table className={styles.table}>
                                 <thead>
                                     <tr>

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { AppointmentViewModelFetch } from '../../../../../utils/api/ClinicOwnerUtils'
 import styles from './AppointmentDetail.module.css'
 import { createPayment, PaymentModel } from '../../../../../utils/api/BookingRegister';
-import { cancelAppointment, cancelAppontment, getCustomerAppointments } from '../../../../../utils/api/UserAccountUtils';
+import { cancelAppointment } from '../../../../../utils/api/MiscUtils';
+import { getCustomerAppointments } from '../../../../../utils/api/UserAccountUtils';
 
 interface AppointmentDetailProps {
     appointmentId: string;
@@ -11,12 +12,10 @@ interface AppointmentDetailProps {
     source: number
 }
 
-const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex, source  }) => {
-    const [appointment, setAppointment] = useState<AppointmentViewModelFetch | null>()
-
-    useEffect(() => {
-        setAppointment(appointments.find(app => app.bookId === appointmentId) ?? null)
-    }, [appointments, appointmentId]);
+const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex, source }) => {
+    // const appointment = appointments.find(app => app.bookId === appointmentId);
+    const [appointment, setAppointment] = useState<AppointmentViewModelFetch>();
+    const id = localStorage.getItem('customerId');
 
     const getStatusText = (status: string) => {
         switch (status) {
@@ -24,7 +23,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
                 return 'Đã đặt lịch';
             case 'pending':
                 return 'Đang chờ xác nhận';
-            case 'completed':
+            case 'finished':
                 return 'Đã hoàn thành';
             case 'canceled':
                 return 'Đã hủy';
@@ -36,19 +35,15 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
     const handleBackButtonClick = () => {
         if (source === 1) {
             setActiveIndex(2);
-        } else if(source === 0){
+        } else if (source === 0) {
             setActiveIndex(1);
         }
     }
 
-    const handleCancel = async () => {
-        try {
-            await cancelAppointment(appointmentId);
-            await fetchData();
-        } catch (error) {
-            console.error('Failed to cancel appointment:', error);
-        }
-    };
+
+    useEffect(() => {
+        setAppointment(appointments.find(app => app.bookId === appointmentId));
+    }, [appointments, appointmentId]);
 
     const fetchData = async () => {
         try {
@@ -66,6 +61,15 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             }
         } catch (error) {
             console.error('Error fetching appointments:', error);
+        }
+    };
+
+    const handleCancel = async () => {
+        try {
+            await cancelAppointment(appointmentId);
+            await fetchData();
+        } catch (error) {
+            console.error('Failed to cancel appointment:', error);
         }
     };
 
@@ -96,7 +100,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             } else {
                 console.error('Payment failed:', response);
             }
-        } catch (error) { 
+        } catch (error) {
             console.log(error);
         }
     }
@@ -137,4 +141,4 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
     )
 }
 
-export default AppointmentDetail
+export default AppointmentDetail;

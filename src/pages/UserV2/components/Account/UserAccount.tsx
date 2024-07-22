@@ -52,6 +52,7 @@ const UserAccount = () => {
         setDisabled(true);
     };
 
+
     const updateUserData = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = event.currentTarget;
         if (type === 'radio') {
@@ -150,11 +151,8 @@ const UserAccount = () => {
                         {!disabled && <SimpleButton buttonType='button' message='Hoàn tất' callback={saveUserData} />}
                         {disabled && <SimpleButton buttonType='button' message='Cập nhật thông tin tài khoản' callback={() => { setDisabled(false) }} />}
                     </div>
-
-                    <hr className={styles.Line} />
-                    <ChangePassword username={userData.username} callbacks={() => { }} />
-                </div>
-            </div>
+                </div> : <div>Loading...</div>    
+        }
         </div>
     );
 };

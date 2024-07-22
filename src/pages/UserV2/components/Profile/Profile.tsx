@@ -53,14 +53,14 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
     return (
         <div className={styles.mainContentRightContainer}>
             <h2 className={styles.mainContentMiddleTitleHeading}>Hồ sơ</h2>
-            <div className={styles.mainContentContainerBox}>
-                <div className={styles.mainContentContainerBoxRowProfileGeneralAlignLeft}>
-                    <label htmlFor="file" className={styles.userProfileImagePlaceholder}>
-                        <img src="../../../../public/placeholder.png" alt="" style={{ width: '12em', height: '12em', borderRadius: '50%', objectFit: 'cover' }} />
-                        <p style={{ textAlign: 'center', width: '100%', padding: '5px' }}> Upload an image</p>
-                    </label>
-                    <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
-
+            {data ?
+                <div className={styles.mainContentContainerBox}>
+                    <div className={styles.mainContentContainerBoxRowProfileGeneralAlignLeft}>
+                        <label htmlFor="file" className={styles.userProfileImagePlaceholder}>
+                            <img src="../../../../public/placeholder.png" alt="" style={{ width: '12em', height: '12em', borderRadius: '50%', objectFit: 'cover' }} />
+                            <p style={{ textAlign: 'center', width: '100%', padding: '5px' }}> Upload an image</p>
+                        </label>
+                        <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
                     <span className={styles.userProfileGeneralInfo}>
                         <h2 style={{ margin: '0', fontSize: '2em', fontWeight: 'bold', textAlign: 'left' }}>{data?.username}</h2>
                         <p style={{ fontSize: '1em', textAlign: 'left' }}>Mã bệnh nhân: {data?.customerId}</p>
