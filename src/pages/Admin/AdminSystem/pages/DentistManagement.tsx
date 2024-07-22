@@ -12,12 +12,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "../components/listItems";
 import styles from "./UserManagement.module.css";
-import { UserInfoModel, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
+import { UserInfoModel, getAllDentistInfo, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
 import { Button } from 'reactstrap';
 import { useEffect, useState } from "react";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { NestedListItems } from "../components/NestedListMenu";
+import { IDentistModel } from "../../../../utils/Interfaces/interfaces";
+import { getClinicInformation } from "../../../../utils/api/MiscUtils";
 
 
 const drawerWidth: number = 270;
@@ -73,7 +75,7 @@ const Drawer = styled(MuiDrawer, {
 const defaultTheme = createTheme();
 
 const DentistManagement = () => {
-    const [users, setUsers] = useState<UserInfoModel[]>([]);
+    const [users, setUsers] = useState<IDentistModel[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
 
@@ -85,12 +87,8 @@ const DentistManagement = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const data = await getAllUsers();
-            if (typeof data === 'string') {
-                setError(data);
-            } else {
-                setUsers(data.filter(user => user.role === 'Dentist'));
-            }
+            const data = await getAllDentistInfo();
+            setUsers(data);
         } catch (error) {
             setError(error as string);
         } finally {
@@ -198,23 +196,23 @@ const DentistManagement = () => {
                                         <th style={{ width: '15%' }}>Họ tên</th>
                                         <th style={{ width: '15%' }}>Email</th>
                                         <th style={{ width: '5%' }}>Phone</th>
-                                        <th style={{ width: '10%' }}>Ngày sinh</th>
-                                        <th style={{ width: '10%' }}>Giới tính</th>
+                                        <th style={{ width: '10%' }}>Phòng khám</th>
+                                        <th style={{ width: '10%' }}>Chủ phòng khám</th>
                                         <th style={{ width: '30%' }}>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {
                                         users.map((user) => (
-                                            <tr key={user.id} className={styles.tableRow}>
-                                                <td>{user.id}</td>
-                                                <td>{user.username}</td>
-                                                <td>{user.joinedDate ? formatDate(user.joinedDate) : ''}</td>
-                                                <td>{user.fullname}</td>
-                                                <td>{user.email}</td>
-                                                <td>{user.phone}</td>
-                                                <td>{user.birthdate ? formatDateOnly(user.birthdate) : ''}</td>
-                                                <td>{user.sex}</td>
+                                            <tr key={user.userId} className={styles.tableRow}>
+                                                <td>{user.dentistId}</td>
+                                                <td>{user.username }</td>
+                                                <td>{user.joinedDate ? formatDate(user.joinedDate) : 'N/A'}</td>
+                                                <td>{user.fullname == '' ? 'N/A' : user.fullname}</td>
+                                                <td>{user.email ?? 'N/A'}</td>
+                                                <td>{user.phone ?? 'N/A'}</td>
+                                                <td>{user.clinicName ? user.clinicName : 'N/A'}</td>
+                                                <td>{user.isActive ? 'Chủ phòng khám' : 'nhân viên'}</td>
                                                 <td>
                                                     <Button
                                                         className={user.isActive ? styles.confirmedButton : styles.unconfirmedButton}

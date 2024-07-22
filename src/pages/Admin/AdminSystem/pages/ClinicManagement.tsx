@@ -176,9 +176,7 @@ const ClinicManagement = () => {
 
     const fetchVerifiedClinics = async (name: string | null, page_size: number | null, page: number | null = 1): Promise<void> => {
         const result = await getAllClinicInfo(name, page, page_size, "verified");
-        const total = await getAllClinicInfo('', 1,  2147483647, 'verified');
-
-        console.log(Math.ceil(total.length/5))
+        const total = await getAllClinicInfo(name, 1,  2147483647, 'verified');
 
         setVerifiedClinics(result);
         setCurrentPageVerified(page!);
@@ -187,7 +185,7 @@ const ClinicManagement = () => {
 
     const fetchUnverifiedClinics = async (name: string = '', page_size: number = Number.MAX_SAFE_INTEGER, page: number = 1): Promise<void> => {
         const result = await getAllClinicInfo(name, page, page_size, "unverified");
-        const total = await getAllClinicInfo('', 1,  2147483647, 'unverified');
+        const total = await getAllClinicInfo(name, 1,  2147483647, 'unverified');
 
         setUnverifiedClinics(result);
         setCurrentPageUnverified(page!);
@@ -390,7 +388,7 @@ const ClinicManagement = () => {
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
                                             <td style={{ width: '25%' }}>{clinic.name}</td>
-                                            <td style={{ width: '20%' }}>{clinic.ownerName}</td>
+                                            <td style={{ width: '20%' }}>{(clinic.ownerName as string) != '' ? clinic.ownerName : "--"}</td>
                                             <td style={{ width: '27%' }}>
                                             {!clinic.working ? (
                                                     <p>
@@ -472,7 +470,7 @@ const ClinicManagement = () => {
                                         <tr key={clinic.id} onClick={() => handleRowClick(clinic)}>
                                             <td style={{ width: '5%' }}>{clinic.id}</td>
                                             <td style={{ width: '25%' }}>{clinic.name}</td>
-                                            <td style={{ width: '20%' }}>{clinic.ownerName}</td>
+                                            <td style={{ width: '20%' }}>{(clinic.ownerName as string) != '' ? clinic.ownerName : "--"}</td>
                                             <td style={{ width: '27%' }}>
                                                 {!clinic.working ? (
                                                     <p>

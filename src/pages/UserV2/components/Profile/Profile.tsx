@@ -1,9 +1,10 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import styles from './Profile.module.css'
 import SimpleButton from '../../../../components/User/Components/Buttons/SimpleButton';
-import { IUserAccount, UserInfo } from '../../../../utils/interfaces/User/UserDefinition';
-import { getUserData } from '../../../../utils/api/UserAccountUtils';
+import { IUserAccount } from '../../../../utils/interfaces/User/UserDefinition';
+import { getCustomerInfo, getUserData } from '../../../../utils/api/UserAccountUtils';
 import { useNavigate } from 'react-router-dom';
+import { ICustomerModel } from '../../../../utils/Interfaces/interfaces';
 
 interface ProfileProps {
     setActiveIndex: (index: number) => void;
@@ -11,7 +12,7 @@ interface ProfileProps {
 
 const Profile = ({ setActiveIndex }: ProfileProps) => {
 
-    const [data, setData]: [IUserAccount, Dispatch<SetStateAction<IUserAccount>>] = useState();
+    const [data, setData]: [ICustomerModel | null, Dispatch<SetStateAction<ICustomerModel | null>>] = useState<ICustomerModel | null>();
     const navigator = useNavigate();
 
     type AvatarState = {
@@ -37,7 +38,7 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
 
     const fetchUserData = () => {
         try {
-            getUserData().then((user: IUserAccount) => {
+            getCustomerInfo().then((user: ICustomerModel | null) => {
                 setData(user);
             });
         } catch (error) {
@@ -60,68 +61,65 @@ const Profile = ({ setActiveIndex }: ProfileProps) => {
                             <p style={{ textAlign: 'center', width: '100%', padding: '5px' }}> Upload an image</p>
                         </label>
                         <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
+                    <span className={styles.userProfileGeneralInfo}>
+                        <h2 style={{ margin: '0', fontSize: '2em', fontWeight: 'bold', textAlign: 'left' }}>{data?.username}</h2>
+                        <p style={{ fontSize: '1em', textAlign: 'left' }}>Mã bệnh nhân: {data?.customerId}</p>
+                    </span>
+                </div>
 
-                        <span className={styles.userProfileGeneralInfo}>
-                            <h2 style={{ margin: '0', fontSize: '2em', fontWeight: 'bold', textAlign: 'left' }}>{data.username}</h2>
-                            <p style={{ fontSize: '1em', textAlign: 'left' }}>Mã bệnh nhân: {data.id}</p>
-                        </span>
-                    </div>
 
-
-                    <div className={styles.MainContentContainerBoxRow}>
-                        <h2 style={{
-                            width: '100%',
-                            padding: '1em 0 0 0',
-                            fontSize: '2em',
-                            textAlign: 'left',
-                        }}>Thông tin cơ bản</h2>
-                        <table style={{ width: '100%', fontSize: '1.5rem', color: 'rgb(105, 105, 105)' }}>
-                            <tbody>
-                                <tr style={{ padding: '0.5em 1em', width: '50%' }}>
-                                    <td className={styles.tableFieldName}>Họ và tên</td>
-                                    <td className={styles.tableFieldValue}>{data.fullname ?? "--"}</td>
-                                </tr>
-                                <tr style={{ padding: '0.5em 1em', width: '50%' }}>
-                                    <td className={styles.tableFieldName}>Số điện thoại</td>
-                                    <td className={styles.tableFieldValue}>{data.phone ?? "--"}</td>
-                                </tr>
-                                <tr style={{ padding: '0.5em 1em', width: '50%' }}>
-                                    <td className={styles.tableFieldName}>Giới tính</td>
-                                    <td className={styles.tableFieldValue}>{data.sex ?? "--"}</td>
-                                </tr>
-                                <tr style={{ padding: '0.5em 1em', width: '50%' }}>
-                                    <td className={styles.tableFieldName}>Ngày sinh</td>
-                                    <td className={styles.tableFieldValue}>{data.birthdate ?? "--"}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className={styles.MainContentContainerBoxRow}>
-                        <h2 style={{
-                            width: '100%',
-                            padding: '1em 0 0 0',
-                            fontSize: '2em',
-                            textAlign: 'left',
-                        }}>Thông tin bổ sung</h2>
-                        <table style={{ width: '100%', fontSize: '1.5rem', color: 'rgb(105, 105, 105)' }}>
-                            <tbody>
-                                <tr style={{ padding: '0.5em 1em', width: '50%' }}>
-                                    <td className={styles.tableFieldName} >Mã BHYT</td>
-                                    <td className={styles.tableFieldValue} >{data.insurance ?? "--"}</td>
-                                </tr>
-                                <tr style={{ padding: '0.5em 1em', width: '50%' }}>
-                                    <td className={styles.tableFieldName} >Email</td>
-                                    <td className={styles.tableFieldValue}>{data.email ?? "--"}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className={styles.MainContentContainerBoxRow}>
-                        <SimpleButton buttonType='button' callback={() => setActiveIndex(3)} message='Chỉnh sửa thông tin cá nhân' />
-                    </div>
-                </div> : <p>Loading...</p>
-            }
-
+                <div className={styles.MainContentContainerBoxRow}>
+                    <h2 style={{
+                        width: '100%',
+                        padding: '1em 0 0 0',
+                        fontSize: '2em',
+                        textAlign: 'left',
+                    }}>Thông tin cơ bản</h2>
+                    <table style={{ width: '100%', fontSize: '1.5rem', color: 'rgb(105, 105, 105)' }}>
+                        <tbody>
+                            <tr style={{ padding: '0.5em 1em', width: '50%' }}>
+                                <td className={styles.tableFieldName}>Họ và tên</td>
+                                <td className={styles.tableFieldValue}>{data?.fullname ?? "--"}</td>
+                            </tr>
+                            <tr style={{ padding: '0.5em 1em', width: '50%' }}>
+                                <td className={styles.tableFieldName}>Số điện thoại</td>
+                                <td className={styles.tableFieldValue}>{data?.phone ?? "--"}</td>
+                            </tr>
+                            <tr style={{ padding: '0.5em 1em', width: '50%' }}>
+                                <td className={styles.tableFieldName}>Giới tính</td>
+                                <td className={styles.tableFieldValue}>{data?.sex ?? "--"}</td>
+                            </tr>
+                            <tr style={{ padding: '0.5em 1em', width: '50%' }}>
+                                <td className={styles.tableFieldName}>Ngày sinh</td>
+                                <td className={styles.tableFieldValue}>{data?.birthdate ?? "--"}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div className={styles.MainContentContainerBoxRow}>
+                    <h2 style={{
+                        width: '100%',
+                        padding: '1em 0 0 0',
+                        fontSize: '2em',
+                        textAlign: 'left',
+                    }}>Thông tin bổ sung</h2>
+                    <table style={{ width: '100%', fontSize: '1.5rem', color: 'rgb(105, 105, 105)' }}>
+                        <tbody>
+                            <tr style={{ padding: '0.5em 1em', width: '50%' }}>
+                                <td className={styles.tableFieldName} >Mã BHYT</td>
+                                <td className={styles.tableFieldValue} >{data?.insurance ?? "--"}</td>
+                            </tr>
+                            <tr style={{ padding: '0.5em 1em', width: '50%' }}>
+                                <td className={styles.tableFieldName} >Email</td>
+                                <td className={styles.tableFieldValue}>{data?.email ?? "--"}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div className={styles.MainContentContainerBoxRow}>
+                    <SimpleButton buttonType='button' callback={() => setActiveIndex(3)} message='Chỉnh sửa thông tin cá nhân' />
+                </div>
+            </div>
         </div >
     )
 }

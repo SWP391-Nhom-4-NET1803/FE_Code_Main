@@ -12,12 +12,13 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "../components/listItems";
 import styles from "./UserManagement.module.css";
-import { UserInfoModel, getAllUsers } from "../../../../utils/api/SystemAdminUtils";
+import { getAllCustomerInfo } from "../../../../utils/api/SystemAdminUtils";
 import { Button } from 'reactstrap';
 import { useEffect, useState } from "react";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { NestedListItems } from "../components/NestedListMenu";
+import { ICustomerModel } from "../../../../utils/Interfaces/interfaces";
 
 
 const drawerWidth: number = 270;
@@ -73,7 +74,7 @@ const Drawer = styled(MuiDrawer, {
 const defaultTheme = createTheme();
 
 const CustomerManagement = () => {
-    const [users, setUsers] = useState<UserInfoModel[]>([]);
+    const [users, setUsers] = useState<ICustomerModel[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
 
@@ -86,12 +87,8 @@ const CustomerManagement = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const data = await getAllUsers();
-            if (typeof data === 'string') {
-                setError(data);
-            } else {
-                setUsers(data.filter(user => user.role === 'Customer'));
-            }
+            const data = await getAllCustomerInfo('', 1, 1000);
+            setUsers(data ?? []);
         } catch (error) {
             setError(error as string);
         } finally {
@@ -101,7 +98,7 @@ const CustomerManagement = () => {
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [])
 
     const formatDate = (dateString: string) => {
         if (!dateString) return '';
@@ -218,8 +215,8 @@ const CustomerManagement = () => {
                                 <tbody>
                                     {
                                         users.map((user) => (
-                                            <tr key={user.id} className={styles.tableRow}>
-                                                <td>{user.id}</td>
+                                            <tr key={user.userId} className={styles.tableRow}>
+                                                <td>{user.customerId}</td>
                                                 <td>{user.username}</td>
                                                 <td>{user.joinedDate ? formatDate(user.joinedDate) : ''}</td>
                                                 <td>{user.fullname}</td>

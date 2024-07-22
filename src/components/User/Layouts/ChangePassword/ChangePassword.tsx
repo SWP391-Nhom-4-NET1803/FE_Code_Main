@@ -2,24 +2,18 @@ import React, { useState } from "react";
 import style from "./ChangePassword.module.scss";
 import SimpleButton from "../../Components/Buttons/SimpleButton";
 import { ChangePasswordProperties } from "../../Interfaces/FormProperty";
+import { updateUserPassword } from "../../../../utils/api/UserAccountUtils";
 
-const ChangePassword: React.FC<ChangePasswordProperties> = ({
-  username,
-  callbacks,
-}: ChangePasswordProperties) => {
+const ChangePassword: React.FC<ChangePasswordProperties> = () => {
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordRetyped, setNewPasswordRetyped] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleNewPasswordChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleNewPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(event.target.value);
   };
 
-  const handleNewPasswordRetypedChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleNewPasswordRetypedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPasswordRetyped(event.target.value);
   };
 
@@ -34,10 +28,7 @@ const ChangePassword: React.FC<ChangePasswordProperties> = ({
   const restorePlaceholder = (inputType: string) => {
     if (inputType === "newPassword" && newPassword === "") {
       setNewPassword("");
-    } else if (
-      inputType === "newPasswordRetyped" &&
-      newPasswordRetyped === ""
-    ) {
+    } else if (inputType === "newPasswordRetyped" && newPasswordRetyped === "") {
       setNewPasswordRetyped("");
     }
   };
@@ -51,8 +42,7 @@ const ChangePassword: React.FC<ChangePasswordProperties> = ({
     }
 
     try {
-      // Gọi API hoặc Backend để thay đổi mật khẩu
-      // await callbacks(username, newPassword); 
+      await updateUserPassword(newPassword); 
       alert("Thay đổi mật khẩu thành công!");
       setNewPassword(""); // Xóa dữ liệu nhập
       setNewPasswordRetyped(""); // Xóa dữ liệu nhập
@@ -71,7 +61,7 @@ const ChangePassword: React.FC<ChangePasswordProperties> = ({
           className={style.SimpleForm}
           onSubmit={handleSubmit} // Thêm onSubmit để gọi handleSubmit khi submit form
         >
-          <input id="username" type="hidden" name="username" value={username} />
+          <input id="username" type="hidden" name="username" value={localStorage.getItem('id')} />
           <label className={`${style.FormRow} ${style.Column}`}>
             <span className={style.Placeholder}>
               {newPassword === "" ? "Mật khẩu mới" : ""}

@@ -1,12 +1,14 @@
+import { ICustomerModel, ICustomerUpdateModel } from './../Interfaces/interfaces';
 import { IUserAccount } from "../interfaces/User/UserDefinition"
 import { connection_path } from "../../constants/developments"
 import { checkAuth } from "./AuthenticateUtils";
-import axios, { Axios, AxiosRequestConfig } from "axios";
+import axios, { Axios, AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { AppointmentViewModelFetch } from "./ClinicOwnerUtils";
 import { UserInfoModel } from "./SystemAdminUtils";
 import { apiCallWithTokenRefresh } from "./apiCallWithRefreshToken";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { PaymentModel } from "./BookingRegister";
+import { IAPIResponseModel, ICustomerModel } from "../Interfaces/interfaces";
 
 export const getUserData = async (): Promise<IUserAccount> => {
     const api_url: string = connection_path.base_url + connection_path.user.customer;
@@ -35,7 +37,6 @@ export const getUserData = async (): Promise<IUserAccount> => {
         return {} as IUserAccount;
     }
 }
-
 
 export const putUserData = async (userData: UserInfoModel) => {
     const apiCall = async () => {
@@ -145,4 +146,140 @@ export const getCustomerPayments = async (customerId: string): Promise<PaymentDe
         console.log(error)
         return []
     }
+}
+
+export const getCustomerInfo = async (): Promise<ICustomerModel | null> => {
+    const APICall = async () => {
+        const config: AxiosRequestConfig = {
+            method: 'GET',
+            baseURL:connection_path.base_url,
+            url: connection_path.user.customer,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+            },
+        };
+
+        const response_data: ICustomerModel | null = await axios(config)
+        .then((res: AxiosResponse<IAPIResponseModel<ICustomerModel>>) => {
+            const data: ICustomerModel = res.data.content!;
+
+            return data;
+        })
+        .catch((error: unknown) => {
+            console.log(error);
+            throw new Error("error");
+        })
+
+        return response_data;
+    }
+
+    const result = await apiCallWithTokenRefresh(APICall);
+
+    return result as ICustomerModel | null;
+}
+
+export const updateCustomerInfo = async (updateInfo: ICustomerUpdateModel): Promise<ICustomerModel | null> => {
+    const apiCall = async () => {
+        const config: AxiosRequestConfig = {
+            method: "PUT",
+            baseURL:connection_path.base_url,
+            url: connection_path.user.customer_update,
+            data: updateInfo,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+            },
+        }
+
+        const response_data: ICustomerModel | null = await axios(config)
+        .then((res: AxiosResponse<IAPIResponseModel<ICustomerModel>>) => {
+            const data: ICustomerModel | null = res.data.content;
+
+            return data;
+        })
+        .catch((error: unknown) => {
+            if (error instanceof AxiosError)
+            {
+                if(error.status === 401)
+                {
+                    throw error;
+                }
+            }
+
+            return null;
+        });
+
+        return response_data;
+    }
+    return await apiCallWithTokenRefresh(apiCall, updateInfo) as ICustomerModel | null;
+}
+
+
+export const cancelAppointment = async (appointmentId: string): Promise<void> => {
+    const api_url = 'https://localhost:7163/cancel';
+    const accessToken = localStorage.getItem('accessToken'); 
+    const configuration: AxiosRequestConfig = {
+        method: 'PUT', 
+        url: api_url, 
+        headers: {
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${accessToken}`, 
+        },
+        params: {
+            book_id: appointmentId, 
+        },
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response.status === 200) {
+            alert('Appointment cancelled successfully.');
+        } else {
+            console.error(`Error cancelling appointment: ${response.status} - ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Error cancelling appointment:', error);
+    }
+};
+
+
+
+
+export const updateUserPassword = async (new_password: string): Promise<object | null> => {
+    const APICall = async () => {
+        const request_config: AxiosRequestConfig = {
+            method: 'put',
+            baseURL: connection_path.base_url,
+            url: connection_path.user.update_password + '/change',
+            data: {
+                newPassword: new_password,
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+            }
+        };
+
+        const response_data: boolean = await axios(request_config)
+        .then((res: AxiosResponse<IAPIResponseModel<string>>) => {
+            if (res.data.success)
+            {
+                return true;
+            }
+
+            return false;
+        })
+        .catch((error: unknown) => {
+            if (error instanceof AxiosError && error.status === 401)
+            {
+                throw new Error('Possible expired token');
+            }
+            return false;
+        });
+        
+        return response_data;
+    }
+
+    return await apiCallWithTokenRefresh(APICall) as object | null;
 }

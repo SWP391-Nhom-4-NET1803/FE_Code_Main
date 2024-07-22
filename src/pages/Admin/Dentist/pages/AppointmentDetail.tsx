@@ -107,6 +107,9 @@ const AppointmentDetail = () => {
             setCanEditOrCancel(appointment.bookingStatus !== 'canceled' && appointment.bookingStatus !== 'completed');
             setAppointment(appointment);
             setNote(appointment.dentistNote);
+
+            console.log(appointment);
+
         } catch (error) {
             console.error("Error fetching appointment:", error);
         } finally {
@@ -118,7 +121,7 @@ const AppointmentDetail = () => {
         try {
             const dentistInfo = await getDentistInfo();
 
-            const clinicId = dentistInfo.content.clinicId;
+            const clinicId = dentistInfo.clinicId;
 
             const slots = await getAllClinicSlots(clinicId);
 
@@ -152,18 +155,23 @@ const AppointmentDetail = () => {
     const handleCreateRecurringAppointment = async () => {
         const dentistInfo = await getDentistInfo();
 
-        const dentistId = dentistInfo.content.dentistId;
+        const dentistId = dentistInfo.dentistId;
+
+
+        console.log(appointment)
 
         const appointmentData = {
             timeSlotId: selectedSlot,
             appointmentType: "checkup",
             appointmentDate: selectedDate,
-            customerId: appointment.customerId,
+            customerId: appointment?.customerId,
             dentistId: dentistId,
-            clinicId: appointment.clinicId,
-            serviceId: appointment.serviceId,
-            orginialAppointment: appointment.bookId
+            clinicId: appointment?.clinicId,
+            serviceId: appointment?.serviceId,
+            orginialAppointment: appointment?.id
         };
+
+        console.log(appointmentData);
 
         const recurringSettings = {
             MaxRecurring: recurringCount,

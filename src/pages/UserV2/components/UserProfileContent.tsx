@@ -66,8 +66,6 @@ const UserProfileContent = () => {
                 return <UserAccount />;
             case 4:
                 return <AppointmentDetailWrapper setActiveIndex={setActiveIndex} source={source} />
-            // case 5: 
-            //     return <PaymentDetailWrapper setActiveIndex={setActiveIndex} />
             default:
                 return <Profile setActiveIndex={setActiveIndex} />;
         }

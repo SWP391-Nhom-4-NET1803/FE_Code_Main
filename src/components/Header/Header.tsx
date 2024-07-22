@@ -56,7 +56,7 @@ const Header = () => {
             <Link href="/"><img src="/Logo.png" alt="Logo" style={{ height: '70px' }} /></Link>
             <Box sx={{ display: 'flex', gap: .5 }}>
               <Button variant='text' href='/guide' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Quy trình</Button>
-              <Button variant="text" href='/for-owner' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Dành cho chủ phòng khám</Button>
+              {auth ? <></> : <Button variant="text" href='/for-owner' sx={{ color: ' #00aeeb', fontWeight: 'bold' }}>Dành cho chủ phòng khám</Button>}
             </Box>
             <Box>
               {auth ? (

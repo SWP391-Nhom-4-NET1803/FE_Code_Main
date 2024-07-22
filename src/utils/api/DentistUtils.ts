@@ -13,6 +13,9 @@ export const getDentistAppointmentsWithFilter = async (
     page_index = 0
 ): Promise<AppointmentViewModel[]> => {
     const response = await getDentistInfo();
+
+    console.log(`lmao {response}`);
+
     let id;
     if (response) {
         id = response.dentistId;
@@ -124,6 +127,7 @@ function addMonths(date: Date, months: number): Date {
 
 export const getAllDentistAppointments = async (): Promise<AppointmentViewModel[]> => {
     const response = await getDentistInfo();
+
     let id;
     if (response) {
         id = response.dentistId;

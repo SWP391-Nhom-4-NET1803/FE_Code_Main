@@ -40,6 +40,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
         }
     }
 
+
     useEffect(() => {
         setAppointment(appointments.find(app => app.bookId === appointmentId));
     }, [appointments, appointmentId]);
@@ -114,6 +115,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             <h2 className={styles.mainContentMiddleTitleHeading}>Chi tiết lịch hẹn</h2>
             <div className={styles.mainContentContainerBox}>
                 <div className={styles.appointmentDetails}>
+                    <p></p>
                     <p><strong>Loại:</strong> {getAppointmentTypeText(appointment.appointmentType)}</p>
                     <p><strong>Ngày khám:</strong> {appointment.appointmentDate}</p>
                     <p><strong>Thời gian:</strong> {formatTime(appointment.appointmentTime)} - {formatTime(appointment.expectedEndTime)}</p>

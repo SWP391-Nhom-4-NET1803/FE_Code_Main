@@ -294,8 +294,15 @@ export const handleForgetPass = async (event: React.FormEvent<HTMLFormElement>, 
 export const tokenForPass = async (event: React.FormEvent<HTMLFormElement>, token: string, navigate: (path: string) => void) => {
     event.preventDefault();
     try {
-        const api_url: string = connection_path.base_url + connection_path.forgetpass.token;
-        const response = await axios.post(api_url, { tokenValue: token });
+        const config: AxiosRequestConfig = 
+        {
+            method: 'get',
+            url: connection_path.base_url + connection_path.forgetpass.token,
+            params: {
+                token: token,
+            }
+        }
+        const response = await axios(config);
         if (response.data.success) {
             localStorage.setItem('resetToken', token);
             navigate('/newpassword');
