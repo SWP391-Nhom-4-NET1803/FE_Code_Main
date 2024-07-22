@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { AppointmentViewModelFetch } from '../../../../../utils/api/ClinicOwnerUtils'
 import styles from './AppointmentDetail.module.css'
 import { createPayment, PaymentModel } from '../../../../../utils/api/BookingRegister';
+import { cancelAppointment, cancelAppontment, getCustomerAppointments } from '../../../../../utils/api/UserAccountUtils';
 
 interface AppointmentDetailProps {
     appointmentId: string;
@@ -11,8 +12,12 @@ interface AppointmentDetailProps {
 }
 
 const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, appointments, setActiveIndex, source  }) => {
-    const appointment = appointments.find(app => app.bookId === appointmentId);
-    
+    const [appointment, setAppointment] = useState<AppointmentViewModelFetch | null>()
+
+    useEffect(() => {
+        setAppointment(appointments.find(app => app.bookId === appointmentId) ?? null)
+    }, [appointments, appointmentId]);
+
     const getStatusText = (status: string) => {
         switch (status) {
             case 'booked':
@@ -36,9 +41,33 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
         }
     }
 
-    const handleCancel = () => {
+    const handleCancel = async () => {
+        try {
+            await cancelAppointment(appointmentId);
+            await fetchData();
+        } catch (error) {
+            console.error('Failed to cancel appointment:', error);
+        }
+    };
 
-    }
+    const fetchData = async () => {
+        try {
+            const response = await getCustomerAppointments(id);
+            if (response) {
+                const appointment = response.find(app => app.bookId === appointmentId);
+                if (appointment) {
+                    setAppointment(appointment);
+                    console.log('Appointment fetched:', appointment);
+                } else {
+                    console.log('Appointment not found');
+                }
+            } else {
+                console.log('No content found in response');
+            }
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+        }
+    };
 
     const getAppointmentTypeText = (type: string) => {
         switch (type) {
@@ -82,6 +111,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             <h2 className={styles.mainContentMiddleTitleHeading}>Chi tiết lịch hẹn</h2>
             <div className={styles.mainContentContainerBox}>
                 <div className={styles.appointmentDetails}>
+                    <p></p>
                     <p><strong>Loại:</strong> {getAppointmentTypeText(appointment.appointmentType)}</p>
                     <p><strong>Ngày khám:</strong> {appointment.appointmentDate}</p>
                     <p><strong>Thời gian:</strong> {formatTime(appointment.appointmentTime)} - {formatTime(appointment.expectedEndTime)}</p>
@@ -96,7 +126,7 @@ const AppointmentDetail: React.FC<AppointmentDetailProps> = ({ appointmentId, ap
             </div>
             <div className={styles.buttonContainer}>
                 <button className={styles.goBackButton} onClick={() => handleBackButtonClick()}>Trở về</button>
-                {appointment.bookingStatus !== 'finished' && ( 
+                {(appointment.bookingStatus !== 'finished' && appointment.bookingStatus !== 'canceled') && (
                     <button className={styles.cancelButton} onClick={handleCancel}>Hủy lịch</button>
                 )}
                 {appointment.bookingStatus === 'pending' && (

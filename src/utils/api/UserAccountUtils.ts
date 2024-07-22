@@ -215,14 +215,45 @@ export const updateCustomerInfo = async (updateInfo: ICustomerUpdateModel): Prom
     return await apiCallWithTokenRefresh(apiCall, updateInfo) as ICustomerModel | null;
 }
 
-export const updateUserPassword = async (user_id: string, new_password: string): Promise<object | null> => {
+
+export const cancelAppointment = async (appointmentId: string): Promise<void> => {
+    const api_url = 'https://localhost:7163/cancel';
+    const accessToken = localStorage.getItem('accessToken'); 
+    const configuration: AxiosRequestConfig = {
+        method: 'PUT', 
+        url: api_url, 
+        headers: {
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${accessToken}`, 
+        },
+        params: {
+            book_id: appointmentId, 
+        },
+    };
+
+    try {
+        const response = await axios(configuration);
+        if (response.status === 200) {
+            alert('Appointment cancelled successfully.');
+        } else {
+            console.error(`Error cancelling appointment: ${response.status} - ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Error cancelling appointment:', error);
+    }
+};
+
+
+
+
+export const updateUserPassword = async (new_password: string): Promise<object | null> => {
     const APICall = async () => {
         const request_config: AxiosRequestConfig = {
+            method: 'put',
             baseURL: connection_path.base_url,
-            url: connection_path.admin.get_users,
+            url: connection_path.user.update_password + '/change',
             data: {
-                id: user_id,
-                password: new_password,
+                newPassword: new_password,
             },
             headers: {
                 'Content-Type': 'application/json',

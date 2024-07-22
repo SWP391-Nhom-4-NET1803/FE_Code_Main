@@ -42,7 +42,7 @@ const ChangePassword: React.FC<ChangePasswordProperties> = () => {
     }
 
     try {
-      await updateUserPassword(localStorage.getItem('id'), newPassword); 
+      await updateUserPassword(newPassword); 
       alert("Thay đổi mật khẩu thành công!");
       setNewPassword(""); // Xóa dữ liệu nhập
       setNewPasswordRetyped(""); // Xóa dữ liệu nhập
